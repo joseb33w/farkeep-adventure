@@ -45,9 +45,9 @@ func _build_environment() -> void:
 	env.background_mode = Environment.BG_SKY
 	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_SKY
-	env.ambient_light_sky_contribution = 1.0
+	env.ambient_light_sky_contribution = 0.5
 	env.tonemap_mode = Environment.TONE_MAPPER_ACES
-	env.tonemap_exposure = 1.0
+	env.tonemap_exposure = 0.72
 	env.fog_enabled = true
 	env.fog_light_color = Color(0.74, 0.80, 0.86)
 	env.fog_density = 0.012
@@ -57,7 +57,7 @@ func _build_environment() -> void:
 
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-48.0, -38.0, 0.0)
-	sun.light_energy = 1.15
+	sun.light_energy = 0.9
 	sun.light_color = Color(1.0, 0.96, 0.86)
 	sun.shadow_enabled = true
 	sun.directional_shadow_max_distance = 120.0
@@ -65,7 +65,7 @@ func _build_environment() -> void:
 
 	var fill := DirectionalLight3D.new()
 	fill.rotation_degrees = Vector3(-30.0, 140.0, 0.0)
-	fill.light_energy = 0.25
+	fill.light_energy = 0.18
 	fill.light_color = Color(0.6, 0.7, 0.85)
 	add_child(fill)
 
@@ -190,7 +190,7 @@ func _build_monument() -> void:
 	pm.roughness = 0.9
 	plaza.set_surface_override_material(0, pm)
 	add_child(plaza)
-	plaza.position = Vector3(0.0, 0.06, 0.0)
+	plaza.position = Vector3(-3.5, 0.06, 0.0)
 
 	var ps: Resource = load(MON_PATH)
 	if ps != null:
@@ -202,9 +202,9 @@ func _build_monument() -> void:
 			s = clampf(6.0 / raw.size.y, 0.05, 30.0)
 		mon.scale = Vector3.ONE * s
 		mon.rotation.y = 0.0
-		mon.global_position = Vector3(0.0, 0.2, 0.0)
+		mon.global_position = Vector3(-3.5, 0.2, 0.0)
 		Style.apply_outline(mon, 0.02)
-		_add_box_collider(mon, 0.7)
+		_add_cyl_collider(mon)
 	else:
 		var ob := MeshInstance3D.new()
 		var bm := BoxMesh.new()
@@ -214,9 +214,9 @@ func _build_monument() -> void:
 		om.albedo_color = Color(0.7, 0.66, 0.5)
 		ob.set_surface_override_material(0, om)
 		add_child(ob)
-		ob.position = Vector3(0.0, 3.0, 0.0)
+		ob.position = Vector3(-3.5, 3.0, 0.0)
 		Style.apply_outline(ob, 0.03)
-		_add_box_collider(ob, 0.9)
+		_add_cyl_collider(ob)
 
 
 func _build_tavern() -> void:
@@ -425,6 +425,23 @@ func _add_box_collider(model: Node3D, shrink: float) -> void:
 	var box := BoxShape3D.new()
 	box.size = aabb.size * shrink
 	col.shape = box
+	col.position = aabb.get_center()
+	body.add_child(col)
+	model.add_child(body)
+
+
+func _add_cyl_collider(model: Node3D) -> void:
+	# round collider (for the fountain) so the player slides around it instead of wedging
+	var aabb := _local_aabb(model)
+	if aabb.size == Vector3.ZERO:
+		return
+	var body := StaticBody3D.new()
+	body.set_collision_layer_value(1, true)
+	var col := CollisionShape3D.new()
+	var cyl := CylinderShape3D.new()
+	cyl.radius = maxf(aabb.size.x, aabb.size.z) * 0.5 * 0.78
+	cyl.height = aabb.size.y
+	col.shape = cyl
 	col.position = aabb.get_center()
 	body.add_child(col)
 	model.add_child(body)
