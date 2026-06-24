@@ -75,6 +75,9 @@ func _ready() -> void:
 	_interact_btn = _mk_button("Use", Color(0.3, 0.6, 0.85))
 	_interact_btn.pressed.connect(func() -> void: interact_pressed.emit())
 	_interact_btn.visible = false
+	_interact_btn.add_theme_font_size_override("font_size", 17)
+	_interact_btn.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_interact_btn.clip_text = false
 	_menu_btn = _mk_button("Board", Color(0.45, 0.4, 0.55))
 	_menu_btn.pressed.connect(func() -> void: menu_pressed.emit())
 
@@ -137,11 +140,12 @@ func _relayout() -> void:
 	_coins.position = Vector2(sl, st + 28)
 	_coins.size = Vector2(240, 26)
 
-	_obj.position = Vector2(vp.x * 0.5 - 260, st)
-	_obj.size = Vector2(520, 30)
-	_compass.position = Vector2(vp.x * 0.5 - 24, st + 34)
+	var ow := minf(vp.x - 28.0, 520.0)
+	_obj.position = Vector2((vp.x - ow) * 0.5, st + 58)
+	_obj.size = Vector2(ow, 30)
+	_compass.position = Vector2(vp.x * 0.5 - 24, st + 92)
 	_compass.size = Vector2(48, 48)
-	_timer.position = Vector2(vp.x * 0.5 - 120, st + 84)
+	_timer.position = Vector2(vp.x * 0.5 - 120, st + 142)
 	_timer.size = Vector2(240, 26)
 
 	_toast.position = Vector2(vp.x * 0.5 - 300, vp.y * 0.42)

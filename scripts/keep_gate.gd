@@ -71,8 +71,8 @@ func get_prompt() -> String:
 	if not locked:
 		return ""
 	if G.has_key():
-		return "Open the Keep Gate"
-	return "The Keep Gate is locked"
+		return "Open Gate"
+	return "Locked"
 
 
 func can_interact() -> bool:
