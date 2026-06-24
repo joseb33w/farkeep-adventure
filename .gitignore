@@ -1,0 +1,10 @@
+godot
+out/
+*.tmp
+verify/
+.godot/
+playbooks/
+inspect*.gd
+test_game.gd
+test_scene.tscn
+models/
